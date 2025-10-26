@@ -1,5 +1,7 @@
 FROM node:18-alpine AS build
 WORKDIR /app
+# Ensure compatibility for native binaries used by tooling (e.g., esbuild)
+RUN apk add --no-cache libc6-compat
 COPY package*.json ./
 RUN npm ci --registry=https://registry.npmmirror.com
 COPY . .
