@@ -3,7 +3,7 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm ci --registry=https://registry.npmmirror.com
 COPY . .
-RUN npm run build
+RUN node -v && npm -v && npm run build --verbose
 
 FROM node:18-alpine AS runner
 WORKDIR /app
