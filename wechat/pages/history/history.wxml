@@ -1,0 +1,213 @@
+<!--pages/history/history.wxml-->
+<view class="page-container">
+  <!-- 页面标题 -->
+  <!-- <view class="page-header">
+    <view class="page-title">历史工单</view>
+    <view class="page-desc">查看和管理已提交的工单</view>
+  </view> -->
+
+  <!-- 搜索和筛选 -->
+  <view class="search-filter-section">
+    <view class="search-box">
+      <input class="search-input" value="{{searchKeyword}}" bindinput="onSearchInput" placeholder="搜索工单编号、项目名称" confirm-type="search" bindconfirm="doSearch" />
+      <view class="search-btn" bindtap="doSearch">
+        <text class="search-icon">🔍</text>
+      </view>
+    </view>
+    
+    <view class="filter-row">
+      <picker bindchange="onStatusFilterChange" value="{{statusFilterIndex}}" range="{{statusFilterList}}" class="filter-picker">
+        <view class="filter-item">
+          <text class="filter-label">{{statusFilterList[statusFilterIndex]}}</text>
+          <text class="filter-arrow">▼</text>
+        </view>
+      </picker>
+      
+      <picker bindchange="onTimeFilterChange" value="{{timeFilterIndex}}" range="{{timeFilterList}}" class="filter-picker">
+        <view class="filter-item">
+          <text class="filter-label">{{timeFilterList[timeFilterIndex]}}</text>
+          <text class="filter-arrow">▼</text>
+        </view>
+      </picker>
+    </view>
+  </view>
+
+  <!-- 统计信息 -->
+  <view class="stats-section" wx:if="{{showStats}}">
+    <view class="stat-card">
+      <text class="stat-number">{{totalOrders}}</text>
+      <text class="stat-label">总工单</text>
+    </view>
+    <view class="stat-card">
+      <text class="stat-number">{{pendingCount}}</text>
+      <text class="stat-label">待处理</text>
+    </view>
+    <view class="stat-card">
+      <text class="stat-number">{{completedCount}}</text>
+      <text class="stat-label">已完成</text>
+    </view>
+  </view>
+
+  <!-- 工单列表 -->
+  <view class="order-list">
+    <view class="order-card" wx:for="{{filteredOrders}}" wx:for-index="orderIndex" wx:key="id">
+      <!-- 工单头部 -->
+      <view class="order-header">
+        <view class="order-number">工单编号#{{item.id}}</view>
+        <view class="order-time">{{item.createTime}}</view>
+      </view>
+
+      <!-- 基本信息 -->
+      <view class="order-info">
+        <view class="info-item">
+          <text class="info-label">项目名称：</text>
+          <text class="info-value">{{item.projectName || item.title}}</text>
+        </view>
+        <view class="info-item">
+          <text class="info-label">提交人：</text>
+          <text class="info-value">{{item.submitter || '未知'}}</text>
+        </view>
+      </view>
+
+      <!-- 工作内容 -->
+      <view class="work-content">
+        <view class="work-section" wx:if="{{item.workTypes && item.workTypes.length > 0}}">
+          <text class="work-title">工种类型：</text>
+          <view class="work-tags">
+            <text class="work-tag work-type" wx:for="{{item.workTypes}}" wx:key="*this">{{item}}</text>
+          </view>
+        </view>
+        
+        <view class="work-section" wx:if="{{item.installContents && item.installContents.length > 0}}">
+          <text class="work-title">安装内容：</text>
+          <view class="work-tags">
+            <text class="work-tag install-content" wx:for="{{item.installContents}}" wx:key="*this">{{item}}</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- 备注说明 -->
+      <view class="remark-section" wx:if="{{item.description || item.voiceText}}">
+        <text class="section-title">备注说明</text>
+        <view class="remark-content">
+          <text class="remark-text">{{item.voiceText}}</text>
+        </view>
+      </view>
+
+      <!-- 现场照片 -->
+      <view class="photos-section" wx:if="{{item.photos && item.photos.length > 0}}">
+        <view class="photos-header">
+          <text class="section-title">现场照片</text>
+          <text class="photos-count">({{item.photos.length}}张)</text>
+        </view>
+        <view class="photos-grid">
+          <view class="photo-item" wx:for="{{item.photos}}" wx:for-item="photo" wx:for-index="photoIndex" wx:key="photoIndex" wx:if="{{photoIndex < 6}}" bindtap="previewPhotos" data-photos="{{item.photos}}" data-index="{{photoIndex}}">
+            <image src="{{photo.path || photo.url}}" mode="aspectFill" class="photo-image" lazy-load="true"></image>
+          
+          </view>
+          <view class="photo-more" wx:if="{{item.photos.length > 6}}" bindtap="viewPhotos" data-photos="{{item.photos}}">
+            <text class="more-text">查看全部</text>
+            <text class="more-count">+{{item.photos.length - 6}}</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- 施工阶段 -->
+      <view class="construction-section">
+        <view class="construction-header">
+          <text class="section-title">施工阶段</text>
+          <text class="selected-count">已选{{item.selectedStagesCount || 0}}项</text>
+        </view>
+        <view class="construction-grid">
+          <view class="stage-item {{stage.checked ? 'selected' : ''}}" wx:for="{{item.constructionStages}}" wx:for-item="stage" wx:for-index="stageIndex" wx:key="value" bindtap="stageCheckbox" data-order-index="{{orderIndex}}" data-stage-index="{{stageIndex}}">
+            <text class="stage-name">{{stage.label}}</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- 工单状态 -->
+      <view class="order-footer">
+        <view class="status-badge status-{{item.status}}">{{item.statusText}}</view>
+        <view class="order-actions" bindtap="viewOrderDetail" data-order="{{item}}">
+          <text class="action-text">查看详情</text>
+          <text class="action-arrow">→</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 分页控件 -->
+  <view class="pagination" wx:if="{{!loading && filteredOrders.length > 0 && totalPages > 1}}">
+    <button class="pagination-btn {{!hasPrevPage ? 'disabled' : ''}}" bindtap="goToPrevPage" disabled="{{!hasPrevPage}}">
+      <text class="pagination-icon">‹</text>
+      <text class="pagination-text">上一页</text>
+    </button>
+    
+    <view class="pagination-info">
+      <text class="page-current">{{currentPage}}</text>
+      <text class="page-separator">/</text>
+      <text class="page-total">{{totalPages}}</text>
+    </view>
+    
+    <button class="pagination-btn {{!hasNextPage ? 'disabled' : ''}}" bindtap="goToNextPage" disabled="{{!hasNextPage}}">
+      <text class="pagination-text">下一页</text>
+      <text class="pagination-icon">›</text>
+    </button>
+  </view>
+
+  <!-- 空状态 -->
+  <view class="empty-state" wx:if="{{!loading && filteredOrders.length === 0}}">
+    <view class="empty-icon">📋</view>
+    <view class="empty-title">暂无工单数据</view>
+    <view class="empty-desc">还没有提交任何工单，点击下方按钮开始创建</view>
+    <button class="empty-btn" bindtap="goToReport">立即创建工单</button>
+  </view>
+
+  <!-- 加载更多提示 -->
+  <view class="load-more-tip" wx:if="{{!loading && filteredOrders.length > 0 && !hasNextPage}}">
+    <text class="tip-text">已加载全部数据</text>
+  </view>
+
+  <!-- 加载状态 -->
+  <view class="loading-state" wx:if="{{loading}}">
+    <view class="loading-spinner"></view>
+    <text class="loading-text">{{filteredOrders.length > 0 ? '加载更多中...' : '加载中...'}}</text>
+  </view>
+
+  <!-- 浮动操作按钮 -->
+  <view class="fab" bindtap="goToReport">
+    <text class="fab-icon">+</text>
+  </view>
+
+  <!-- 图片预览弹窗 -->
+  <view class="image-modal" wx:if="{{showImageModal}}" bindtap="closeImageModal">
+    <view class="image-modal-content" catchtap="stopPropagation">
+      <view class="image-modal-header">
+        <text class="image-modal-title">图片预览 ({{currentImageIndex + 1}}/{{modalImages.length}})</text>
+        <text class="image-modal-close" bindtap="closeImageModal">×</text>
+      </view>
+      <view class="image-modal-body">
+        <swiper class="image-swiper" current="{{currentImageIndex}}" bindchange="onImageSwiperChange">
+          <swiper-item wx:for="{{modalImages}}" wx:key="index">
+            <image class="modal-image" src="{{item}}" mode="aspectFit" />
+          </swiper-item>
+        </swiper>
+      </view>
+      <!-- 图片路径显示区域 -->
+      <view class="image-path-section">
+        <view class="image-path-label">图片路径:</view>
+        <view class="image-path-content">
+          <text class="image-path-text" selectable="true">{{modalImages[currentImageIndex]}}</text>
+          <text class="copy-path-btn" bindtap="copyImagePath" data-path="{{modalImages[currentImageIndex]}}">复制</text>
+        </view>
+      </view>
+      <view class="image-modal-footer" wx:if="{{modalImages.length > 1}}">
+        <view class="image-dots">
+          <view class="dot {{index === currentImageIndex ? 'active' : ''}}" 
+                wx:for="{{modalImages}}" wx:key="index" 
+                bindtap="switchToImage" data-index="{{index}}"></view>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>

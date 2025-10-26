@@ -1,0 +1,195 @@
+<!--pages/order-detail/order-detail.wxml-->
+<view class="page-container">
+  <!-- 页面标题 -->
+  <view class="page-header">
+    <view class="page-title">工单详情</view>
+    <view class="page-desc">工单号：{{orderData.id}}</view>
+  </view>
+
+  <!-- 工单状态 -->
+  <view class="card mb-20">
+    <view class="card-content">
+      <view class="status-section">
+        <view class="status-main">
+          <view class="status status-{{orderData.status}} status-large">{{orderData.statusText}}</view>
+          <view class="status-time">{{orderData.createTime}}</view>
+        </view>
+        <view class="status-icon">
+          <text class="status-emoji">{{statusEmoji}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 基本信息 -->
+  <view class="card mb-20">
+    <view class="card-header">
+      <view class="card-title">基本信息</view>
+    </view>
+    <view class="card-content">
+      <!-- <view class="info-item">
+        <view class="info-label">工单标题</view>
+        <view class="info-value">{{orderData.title}}</view>
+      </view>
+       -->
+      <view class="info-item">
+        <!-- <view class="info-label">问题描述</view> -->
+        <view class="info-value info-desc">{{orderData.description}}</view>
+      </view>
+      
+      <!-- <view class="info-item">
+        <view class="info-label">优先级</view>
+        <view class="info-value">
+          <view class="priority priority-{{orderData.priority}}">{{priorityText}}</view>
+        </view>
+      </view> -->
+      
+      <view class="info-item" wx:if="{{orderData.contact}}">
+        <view class="info-label">联系人</view>
+        <view class="info-value">{{orderData.contact}}</view>
+      </view>
+      
+      <view class="info-item" wx:if="{{orderData.phone}}">
+        <view class="info-label">联系电话</view>
+        <view class="info-value">
+          <text class="phone-number" bindtap="callPhone" data-phone="{{orderData.phone}}">{{orderData.phone}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 位置信息 -->
+  <view class="card mb-20">
+    <view class="card-header">
+      <view class="card-title">位置信息</view>
+    </view>
+    <view class="card-content">
+      <view class="info-item">
+        <view class="info-label">项目名称</view>
+        <view class="info-value">{{orderData.projectName}}</view>
+      </view>
+      
+      <view class="info-item">
+        <view class="info-label">地点名称</view>
+        <view class="info-value">{{orderData.locationName}}</view>
+      </view>
+      
+      <view class="info-item" wx:if="{{orderData.location}}">
+        <view class="info-label">GPS坐标</view>
+        <view class="info-value">
+          <text class="location-coords" bindtap="openLocation">{{orderData.location.latitude}}, {{orderData.location.longitude}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 现场照片 -->
+  <view class="card mb-20" wx:if="{{orderData.photos && orderData.photos.length > 0}}">
+    <view class="card-header">
+      <view class="card-title">现场照片</view>
+      <view class="photo-count">共{{orderData.photos.length}}张</view>
+    </view>
+    <view class="card-content">
+      <view class="photo-gallery">
+        <view class="photo-item" wx:for="{{orderData.photos}}" wx:key="timestamp" bindtap="previewPhoto" data-index="{{index}}">
+          <image src="{{item.path}}" mode="aspectFill" class="photo-image"></image>
+          <view class="photo-watermark-badge" wx:if="{{item.hasWatermark}}">
+            <text class="watermark-icon">💧</text>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 操作按钮 -->
+  <!-- <view class="action-section">
+    <button class="btn btn-secondary action-btn" bindtap="editOrder" wx:if="{{canEdit}}">
+      <text class="btn-icon">✏️</text>
+      编辑工单
+    </button>
+    
+    <button class="btn btn-primary action-btn" bindtap="shareOrder">
+      <text class="btn-icon">📤</text>
+      分享工单
+    </button>
+  </view> -->
+
+  <!-- 时间线（如果有处理记录） -->
+  <view class="card mb-20" wx:if="{{timeline && timeline.length > 0}}">
+    <view class="card-header">
+      <view class="card-title">处理记录</view>
+    </view>
+    <view class="card-content">
+      <view class="timeline">
+        <view class="timeline-item" wx:for="{{timeline}}" wx:key="id">
+          <view class="timeline-dot timeline-dot-{{item.type}}"></view>
+          <view class="timeline-content">
+            <view class="timeline-title">{{item.title}}</view>
+            <view class="timeline-desc" wx:if="{{item.description}}">{{item.description}}</view>
+            <view class="timeline-time">{{item.time}}</view>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>
+
+<!-- 图片预览弹窗 -->
+<view class="image-modal" wx:if="{{showImageModal}}" bindtap="closeImageModal">
+  <view class="image-modal-content" catchtap="stopPropagation">
+    <view class="image-modal-header">
+      <text class="image-modal-title">图片预览 ({{currentImageIndex + 1}}/{{modalImages.length}})</text>
+      <text class="image-modal-close" bindtap="closeImageModal">×</text>
+    </view>
+    <view class="image-modal-body">
+      <swiper class="image-swiper" current="{{currentImageIndex}}" bindchange="onImageSwiperChange">
+        <swiper-item wx:for="{{modalImages}}" wx:key="index">
+          <image class="modal-image" src="{{item}}" mode="aspectFit" />
+        </swiper-item>
+      </swiper>
+    </view>
+    <!-- 图片路径显示区域 -->
+    <view class="image-path-section">
+      <view class="image-path-label">图片路径:</view>
+      <view class="image-path-content">
+        <text class="image-path-text" selectable="true">{{modalImages[currentImageIndex]}}</text>
+        <text class="copy-path-btn" bindtap="copyImagePath" data-path="{{modalImages[currentImageIndex]}}">复制</text>
+      </view>
+    </view>
+    <view class="image-modal-footer" wx:if="{{modalImages.length > 1}}">
+      <view class="image-dots">
+        <view class="dot {{index === currentImageIndex ? 'active' : ''}}" 
+              wx:for="{{modalImages}}" wx:key="index" 
+              bindtap="switchToImage" data-index="{{index}}"></view>
+      </view>
+    </view>
+  </view>
+</view>
+
+<!-- 分享弹窗 -->
+<!-- <view class="modal" wx:if="{{showShareModal}}" bindtap="hideShareModal">
+  <view class="modal-content share-modal" catchtap="stopPropagation">
+    <view class="modal-header">
+      <view class="modal-title">分享工单</view>
+      <view class="modal-close" bindtap="hideShareModal">×</view>
+    </view>
+    <view class="modal-body">
+      <view class="share-options">
+        <button class="share-option" open-type="share">
+          <view class="share-icon wechat-icon">💬</view>
+          <view class="share-text">微信好友</view>
+        </button>
+        
+        <view class="share-option" bindtap="copyOrderInfo">
+          <view class="share-icon copy-icon">📋</view>
+          <view class="share-text">复制信息</view>
+        </view>
+        
+        <view class="share-option" bindtap="saveToAlbum">
+          <view class="share-icon save-icon">💾</view>
+          <view class="share-text">保存图片</view>
+        </view>
+      </view>
+    </view>
+  </view>
+</view> -->

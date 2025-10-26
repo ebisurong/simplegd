@@ -1,0 +1,186 @@
+<!--pages/report/report.wxml-->
+<view class="page-container">
+  <!-- 日期和黄历信息 -->
+  <view class="date-calendar-header">
+    <view class="date-info">
+      <view class="date-text">{{currentDate}}</view>
+    </view>
+    <view class="calendar-info">
+      <view class="calendar-text">{{calendarInfo}}</view>
+    </view>
+  </view>
+
+  <!-- 工种与安装内容选择 -->
+  <view class="card mb-20">
+    <view class="card-header">
+      <view class="card-title">安装工种与内容</view>
+    </view>
+    <view class="card-content">
+      <!-- 工种选择区域 (2行4列) -->
+      <view class="work-type-selection">
+        <view class="work-type-title">选择工种</view>
+        <view class="work-type-grid">
+          <view wx:for="{{workTypeList}}" wx:for-item="workType" wx:for-index="index" wx:key="key" 
+                class="{{selectedWorkTypeKey === workType.key ? 'work-type-item selected' : 'work-type-item'}}" 
+                bindtap="onWorkTypeSelect" 
+                data-key="{{workType.key}}">
+            {{workType.label}}
+          </view>
+        </view>
+      </view>
+      
+      <!-- 安装内容选择区域 -->
+      <view class="content-selection-area">
+        <view class="section-title">安装内容 - {{currentWorkType.label}}</view>
+        <view class="content-grid">
+          <view 
+            wx:for="{{currentWorkType.contents}}" 
+            wx:key="value"
+            class="content-item {{item.checked ? 'selected' : ''}}"
+            data-content="{{item.value}}"
+            bindtap="onContentSelect"
+          >
+            {{item.label}}
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 选择汇总显示 -->
+  <view class="card mb-20">
+    <view class="card-header">
+      <view class="card-title">已选择内容</view>
+    </view>
+    <view class="card-content">
+      <view class="summary-section">
+        <view class="summary-header">
+          <text class="summary-title">当前选择</text>
+          <text class="summary-total">共{{selectedWorkTypeCount}}个工种，共{{selectedContentCount}}个内容</text>
+        </view>
+        
+        <view wx:if="{{Object.keys(selectedSummary).length === 0}}" class="summary-empty">
+          暂未选择任何安装内容
+        </view>
+        
+        <view wx:else>
+          <view wx:for="{{selectedSummary}}" wx:for-item="summaryItem" wx:for-index="workTypeKey" wx:key="workTypeKey" class="summary-group">
+            <view class="summary-group-title">{{summaryItem.label}}</view>
+            <view class="summary-items">
+              <view wx:for="{{summaryItem.contents}}" wx:for-item="content" wx:key="value" class="summary-item">
+                {{content.label}}
+                <view class="summary-item-remove" 
+                      bindtap="onSummaryContentRemove" 
+                      data-worktype="{{workTypeKey}}" 
+                      data-contentvalue="{{content.value}}">
+                  <image src="/images/cancle.png" class="remove-icon" mode="aspectFit"></image>
+                </view>
+              </view>
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 现场照片 -->
+  <view class="card mb-20">
+    <view class="card-header">
+      <view class="card-title">现场照片</view>
+      <view class="photo-count">{{photos.length}}/9</view>
+    </view>
+    <view class="card-content">
+      <view class="photo-grid">
+        <!-- 已选择的照片 -->
+        <view class="photo-item" wx:for="{{photos}}" wx:key="index">
+          <image src="{{item.path}}" mode="aspectFill" class="photo-image" bindtap="previewPhoto" data-index="{{index}}"></image>
+          <view class="photo-delete" bindtap="deletePhoto" data-index="{{index}}">×</view>
+          <view class="photo-watermark" wx:if="{{item.hasWatermark}}">已添加水印</view>
+        </view>
+        
+        <!-- 添加照片按钮 -->
+        <view class="photo-add" wx:if="{{photos.length < 9}}" bindtap="choosePhoto">
+          <text class="add-icon">📷</text>
+          <text class="add-text">拍照</text>
+        </view>
+      </view>
+      
+      <view class="photo-tips">
+        <text class="tip-icon">💡</text>
+        <text class="tip-text">建议拍摄清晰的现场照片，系统将自动添加项目信息水印</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 语音输入文本框 -->
+  <view class="card mb-20">
+    <view class="card-header">
+      <view class="card-title">备注说明</view>
+    </view>
+    <view class="card-content">
+      <view class="voice-input-container">
+        <textarea class="voice-textarea" 
+                  value="{{voiceText}}" 
+                  bindinput="onVoiceTextInput" 
+                  placeholder="请输入备注信息或点击语音输入" 
+                  maxlength="500"
+                  auto-height></textarea>
+        <view class="voice-controls">
+          <view class="voice-btn {{isRecording ? 'recording' : ''}}" 
+                bindtouchstart="startRecord" 
+                bindtouchend="stopRecord">
+            <image src="{{isRecording ? '/images/stop.png' : '/images/voice.png'}}" class="voice-icon-img" mode="aspectFit"></image>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 位置信息 -->
+  <view class="card mb-20">
+    <view class="card-header">
+      <view class="card-title">位置信息</view>
+    </view>
+    <view class="card-content">
+      <view class="location-info">
+        <view class="location-item">
+          <text class="location-label">项目名称：</text>
+          <text class="location-value">{{projectName || '未设置'}}</text>
+        </view>
+        <view class="location-item" wx:if="{{locationName}}">
+          <text class="location-label">详细地址：</text>
+          <text class="location-value">{{locationName}}</text>
+        </view>
+        <view class="location-item" wx:if="{{currentLocation}}">
+          <text class="location-label">GPS坐标：</text>
+          <text class="location-value">{{currentLocation.latitude}}, {{currentLocation.longitude}}</text>
+        </view>
+      </view>
+      
+      <button class="btn btn-secondary location-btn" bindtap="getCurrentLocation">
+        <text class="btn-icon">📍</text>
+        {{currentLocation ? '重新定位' : '获取位置'}}
+      </button>
+    </view>
+  </view>
+
+  <!-- 提交按钮 -->
+  <view class="submit-section">
+    <button class="btn btn-primary submit-btn" bindtap="submitOrder" disabled="{{submitting}}">
+      {{submitting ? '提交中...' : '提交工单'}}
+    </button>
+  </view>
+</view>
+
+
+
+<!-- 加载提示 -->
+<view class="loading-overlay" wx:if="{{processing}}">
+  <view class="loading-content">
+    <view class="loading-spinner"></view>
+    <view class="loading-text">{{loadingText}}</view>
+  </view>
+</view>
+
+<!-- 隐藏的canvas用于水印处理 -->
+<canvas canvas-id="watermarkCanvas" style="position: fixed; top: -1000px; left: -1000px; width: 400px; height: 300px;"></canvas>

@@ -1,0 +1,60 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/report/report",
+    "pages/history/history",
+    "pages/order-detail/order-detail"
+  ],
+  "window": {
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#fff",
+    "navigationBarTitleText": "工单管理系统",
+    "navigationBarTextStyle": "black",
+    "backgroundColor": "#f8f8f8"
+  },
+  "tabBar": {
+    "color": "#7A7E83",
+    "selectedColor": "#3cc51f",
+    "borderStyle": "black",
+    "backgroundColor": "#ffffff",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "iconPath": "images/home.png",
+        "selectedIconPath": "images/home-active.png",
+        "text": "首页"
+      },
+      {
+        "pagePath": "pages/report/report",
+        "iconPath": "images/report.png",
+        "selectedIconPath": "images/report-active.png",
+        "text": "工单上报"
+      },
+      {
+        "pagePath": "pages/history/history",
+        "iconPath": "images/history.png",
+        "selectedIconPath": "images/history-active.png",
+        "text": "历史查询"
+      }
+    ]
+  },
+  "plugins": {
+    "WechatSI": {
+      "version": "0.3.5",
+      "provider": "wx069ba97219f66d99"
+    }
+  },
+  "permission": {
+    "scope.userLocation": {
+      "desc": "用于获取工单上报时的地理位置信息"
+    },
+    "scope.record": {
+      "desc": "用于语音输入功能，录制语音并转换为文字"
+    }
+  },
+  "networkTimeout": {
+    "request": 10000
+  },
+  "requiredBackgroundModes": [],
+  "sitemapLocation": "sitemap.json"
+}

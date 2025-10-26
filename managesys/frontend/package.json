@@ -1,0 +1,37 @@
+{
+  "name": "workorder-management-frontend",
+  "private": true,
+  "version": "1.0.0",
+  "description": "工单管理系统前端",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 0.0.0.0 --port 3000",
+    "build": "vite build",
+    "preview": "vite preview --host 0.0.0.0 --port 4173",
+    "serve": "npm run preview"
+  },
+  "keywords": [
+    "vue3",
+    "element-plus",
+    "工单管理",
+    "后台管理"
+  ],
+  "dependencies": {
+    "@element-plus/icons-vue": "^2.3.2",
+    "@tensorflow/tfjs": "^4.22.0",
+    "axios": "^1.12.2",
+    "echarts": "^6.0.0",
+    "element-plus": "^2.11.3",
+    "pinia": "^3.0.3",
+    "sass": "^1.93.2",
+    "vue": "^3.5.21",
+    "vue-router": "^4.5.1"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^5.0.4",
+    "@vue/tsconfig": "^0.8.1",
+    "typescript": "~5.8.3",
+    "vite": "^5.4.9",
+    "vue-tsc": "^3.0.7"
+  }
+}

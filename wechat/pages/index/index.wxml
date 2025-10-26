@@ -1,0 +1,106 @@
+<!--pages/index/index.wxml-->
+<view class="page-container">
+  <!-- 欢迎卡片 -->
+  <!-- <view class="card mb-20">
+    <view class="card-content text-center">
+      <image src="/images/logo.png" class="logo" mode="aspectFit"></image>
+      <view class="welcome-title">工单管理系统</view>
+      <view class="welcome-desc">高效便捷的工单上报与管理平台</view>
+    </view>
+  </view> -->
+
+  <!-- 功能菜单 -->
+  <view class="card mb-20">
+    <view class="card-header">
+      <view class="card-title">快速操作</view>
+    </view>
+    <view class="card-content">
+      <view class="menu-grid">
+        <view class="menu-item" bindtap="goToReport">
+          <view class="menu-icon report-icon">
+            <text class="iconfont icon-add">📝</text>
+          </view>
+          <view class="menu-text">工单上报</view>
+        </view>
+        <view class="menu-item" bindtap="goToHistory">
+          <view class="menu-icon history-icon">
+            <text class="iconfont icon-history">📋</text>
+          </view>
+          <view class="menu-text">历史查询</view>
+        </view>
+        <view class="menu-item" bindtap="showSettings">
+          <view class="menu-icon settings-icon">
+            <text class="iconfont icon-settings">⚙️</text>
+          </view>
+          <view class="menu-text">系统设置</view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 统计信息 -->
+  <view class="card mb-20">
+    <view class="card-header">
+      <view class="card-title">工单统计</view>
+    </view>
+    <view class="card-content">
+      <view class="stats-grid">
+        <view class="stats-item">
+          <view class="stats-number">{{totalOrders}}</view>
+          <view class="stats-label">总工单数</view>
+        </view>
+        <view class="stats-item">
+          <view class="stats-number">{{todayOrders}}</view>
+          <view class="stats-label">今日上报</view>
+        </view>
+        <view class="stats-item">
+          <view class="stats-number">{{pendingOrders}}</view>
+          <view class="stats-label">待处理</view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 最近工单 -->
+  <view class="card" wx:if="{{recentOrders.length > 0}}">
+    <view class="card-header flex-between">
+      <view class="card-title">最近工单</view>
+      <view class="more-link" bindtap="goToHistory">查看更多</view>
+    </view>
+    <view class="card-content">
+      <view class="recent-order" wx:for="{{recentOrders}}" wx:key="id" bindtap="viewOrderDetail" data-order="{{item}}">
+        <view class="order-info">
+          <view class="order-title">{{item.title}}</view>
+          <view class="order-time">{{item.createTime}}</view>
+        </view>
+        <view class="order-status">
+          <view class="status status-{{item.status}}">{{item.statusText}}</view>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>
+
+<!-- 设置弹窗 -->
+<view class="modal" wx:if="{{showSettingsModal}}" bindtap="hideSettings">
+  <view class="modal-content" catchtap="stopPropagation">
+    <view class="modal-header">
+      <view class="modal-title">系统设置</view>
+      <view class="modal-close" bindtap="hideSettings">×</view>
+    </view>
+    <view class="modal-body">
+      <view class="form-group">
+        <view class="form-label">项目名称</view>
+        <input class="form-input" value="{{projectName}}" bindinput="onProjectNameInput" placeholder="请输入项目名称" />
+      </view>
+      <view class="form-group">
+        <view class="form-label">地点名称</view>
+        <input class="form-input" value="{{locationName}}" bindinput="onLocationNameInput" placeholder="请输入地点名称" />
+      </view>
+    </view>
+    <view class="modal-footer">
+      <button class="btn btn-secondary" bindtap="hideSettings">取消</button>
+      <button class="btn btn-primary" bindtap="saveSettings">保存</button>
+    </view>
+  </view>
+</view>

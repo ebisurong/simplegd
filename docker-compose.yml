@@ -1,0 +1,42 @@
+version: "3.8"
+
+services:
+  backend:
+    image: docker.io/royosoft/simplegd:backend-v3
+    container_name: simplegd-backend
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
+    environment:
+      - NODE_ENV=production
+      - PORT=8000
+    volumes:
+      - /var/lib/simplegd/uploads:/app/uploads
+      - /var/lib/simplegd/data/database.sqlite:/app/database.sqlite
+    ports:
+      - "8000:8000"  # 如用反向代理统一到 80，可去掉此映射
+    restart: always
+
+  frontend:
+    image: docker.io/royosoft/simplegd:frontend-v1
+    container_name: simplegd-frontend
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
+    environment:
+      - NODE_ENV=production
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    restart: always
+
+  watchtower:
+    image: containrrr/watchtower
+    container_name: simplegd-watchtower
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: "--interval 60 --label-enable --cleanup"
+    restart: always
+
+networks:
+  default:
+    name: simplegd-net

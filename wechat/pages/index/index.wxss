@@ -1,0 +1,210 @@
+/* pages/index/index.wxss */
+
+/* Logo样式 */
+.logo {
+  width: 120rpx;
+  height: 120rpx;
+  margin-bottom: 20rpx;
+}
+
+.welcome-title {
+  font-size: 36rpx;
+  font-weight: 600;
+  color: #333333;
+  margin-bottom: 12rpx;
+}
+
+.welcome-desc {
+  font-size: 26rpx;
+  color: #666666;
+  line-height: 1.4;
+}
+
+/* 菜单网格 */
+.menu-grid {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.menu-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20rpx;
+  border-radius: 12rpx;
+  transition: all 0.3s ease;
+}
+
+.menu-item:active {
+  background: #f8f9fa;
+  transform: scale(0.95);
+}
+
+.menu-icon {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16rpx;
+  font-size: 36rpx;
+}
+
+.report-icon {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #ffffff;
+}
+
+.history-icon {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  color: #ffffff;
+}
+
+.settings-icon {
+  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+  color: #ffffff;
+}
+
+.menu-text {
+  font-size: 24rpx;
+  color: #333333;
+  font-weight: 500;
+}
+
+/* 统计网格 */
+.stats-grid {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.stats-item {
+  text-align: center;
+  flex: 1;
+}
+
+.stats-number {
+  font-size: 48rpx;
+  font-weight: 700;
+  color: #667eea;
+  margin-bottom: 8rpx;
+}
+
+.stats-label {
+  font-size: 24rpx;
+  color: #666666;
+}
+
+/* 更多链接 */
+.more-link {
+  font-size: 24rpx;
+  color: #667eea;
+  padding: 8rpx 0;
+}
+
+/* 最近工单 */
+.recent-order {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24rpx 0;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+
+.recent-order:last-child {
+  border-bottom: none;
+}
+
+.recent-order:active {
+  background: #f8f9fa;
+}
+
+.order-info {
+  flex: 1;
+}
+
+.order-title {
+  font-size: 28rpx;
+  color: #333333;
+  font-weight: 500;
+  margin-bottom: 8rpx;
+}
+
+.order-time {
+  font-size: 22rpx;
+  color: #999999;
+}
+
+.order-status {
+  margin-left: 20rpx;
+}
+
+/* 模态框样式 */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  width: 600rpx;
+  background: #ffffff;
+  border-radius: 16rpx;
+  overflow: hidden;
+  margin: 0 40rpx;
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 30rpx;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+
+.modal-title {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #333333;
+}
+
+.modal-close {
+  width: 40rpx;
+  height: 40rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32rpx;
+  color: #999999;
+  border-radius: 50%;
+}
+
+.modal-close:active {
+  background: #f0f0f0;
+}
+
+.modal-body {
+  padding: 30rpx;
+}
+
+.modal-footer {
+  display: flex;
+  padding: 20rpx 30rpx 30rpx;
+  gap: 20rpx;
+}
+
+.modal-footer .btn {
+  flex: 1;
+  height: 80rpx;
+  line-height: 80rpx;
+  text-align: center;
+}

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>API测试页面</title>
+    <meta charset="utf-8">
+</head>
+<body>
+    <h1>工单管理系统 API 测试</h1>
+    <div id="result"></div>
+    
+    <script>
+        async function testAPI() {
+            const resultDiv = document.getElementById('result');
+            
+            try {
+                // 测试获取工单列表
+                const response = await fetch('http://192.168.0.101:8000/api/work-orders?page=1&limit=5');
+                const data = await response.json();
+                
+                resultDiv.innerHTML = `
+                    <h2>API测试结果:</h2>
+                    <p>状态: ${response.status}</p>
+                    <p>工单总数: ${data.total}</p>
+                    <p>当前页工单数: ${data.rows ? data.rows.length : 0}</p>
+                    <h3>工单列表:</h3>
+                    <pre>${JSON.stringify(data, null, 2)}</pre>
+                `;
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <h2>API测试失败:</h2>
+                    <p style="color: red;">错误: ${error.message}</p>
+                `;
+            }
+        }
+        
+        // 页面加载后自动测试
+        window.onload = testAPI;
+    </script>
+</body>
+</html>

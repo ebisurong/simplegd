@@ -1,0 +1,25 @@
+# Exclude local artifacts and large runtime data
+uploads/
+logs/
+*.log
+
+# Local databases
+*.sqlite
+database.sqlite
+database.db
+
+# VCS and environment
+.git/
+.gitignore
+.env
+
+# Node artifacts (host)
+node_modules/
+npm-debug.log
+
+# Trae and project docs not needed in image
+../../.trae/
+../../README.md
+../../manifests/
+../../wechat/
+../../managesys/frontend/
