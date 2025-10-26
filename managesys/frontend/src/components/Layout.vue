@@ -3,9 +3,9 @@
     <!-- 侧边栏 -->
     <el-aside :width="isCollapse ? '64px' : '200px'" class="sidebar">
       <div class="logo">
-        <img v-if="isCollapse" src="/logo.png" alt="logo" class="logo-img" />
+        <img v-if="isCollapse" :src="logo" alt="logo" class="logo-img" />
         <div v-else class="logo-expanded">
-          <img src="/logo.png" alt="logo" class="logo-img" />
+          <img :src="logo" alt="logo" class="logo-img" />
           <span>工单管理系统</span>
         </div>
       </div>
@@ -106,6 +106,7 @@ import {
   Guide
 } from '@element-plus/icons-vue'
 import { useUserStore } from '../stores/user'
+import logo from '@/assets/vue.svg'
 
 const route = useRoute()
 const router = useRouter()
